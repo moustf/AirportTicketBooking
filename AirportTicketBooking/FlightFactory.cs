@@ -43,6 +43,9 @@ namespace AirportTicketBooking
             
             flightRefType.GetProperty("FlightPrice")?.SetValue(flight, flightPriceValue, null);
             flightRefType.GetProperty("FlightName")?.SetValue(flight, flightNameValue, null);
+
+            var csvio = new CSVIO();
+            // csvio.WriteDataToCsv(flight, "Flight");
             
             return flight;
         }
