@@ -16,58 +16,37 @@ namespace AirportTicketBooking
             var fullHomeDir = Directory.GetCurrentDirectory().Split('/').TakeWhile(dir => dir != "bin");
             _currentDir = String.Join("/", fullHomeDir);
         }
-        
         private readonly string _currentDir;
         private readonly CsvConfiguration _csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = false,
         };
 
-        public Manager SearchForManager(string name) 
+        public T SearchForRecord<T>(string prop, string value, string fileName) 
         {
-            using var reader = new StreamReader($@"{_currentDir}/DataStore/Manager.csv");
+            using var reader = new StreamReader($@"{_currentDir}/DataStore/{fileName}.csv");
             using var csv = new CsvReader(reader, _csvConfiguration);
-            var records = csv.GetRecords<Manager>();
+            var records = csv.GetRecords<T>();
 
-            return records.SingleOrDefault((record) => record.ManagerName == name);
-        }
-        public Passenger SearchForPassenger(string name) 
-        {
-            using var reader = new StreamReader($@"{_currentDir}/DataStore/Passenger.csv");
-            using var csv = new CsvReader(reader, _csvConfiguration);
-            var records = csv.GetRecords<Passenger>();
-
-            return records.SingleOrDefault((record) => record.PassengerName == name);
-        }
-
-        public IEnumerable<Manager> GetAllManagers()
-        {
-            using var reader = new StreamReader($@"{_currentDir}/DataStore/Manager.csv");
-            using var csv = new CsvReader(reader, _csvConfiguration);
-            return csv.GetRecords<Manager>();
-        }
-
-        public void WriteDataToCsv(IEnumerable<object> objects, string fileName)
-        {
-            var enumerableObjects = objects as object[] ?? objects.ToArray();
-            
-            foreach (var obj in enumerableObjects)
-            {
-                var objType = obj.GetType();
-                if (objType != typeof(Passenger) || objType != typeof(Manager) || objType != typeof(Flight) ||
-                    objType != typeof(Booking))
-                {
-                    throw new Exception("The objects types are not consistent!");
-                }
-            }
-            
-            using var stream = File.Open($@"{_currentDir}/DataStore/{fileName}.csv", FileMode.Append);
-            using var writer = new StreamWriter(stream);
-            using var csv = new CsvWriter(writer, _csvConfiguration);
-            
-            csv.WriteRecords(enumerableObjects);
+            return records.FirstOrDefault((record) => record.GetType().GetProperty(prop)?.GetValue(record).ToString() == value);
         }
         
+        public T[] GetAllRecords<T>(string fileName)
+        {
+            using var reader = new StreamReader($@"{_currentDir}/DataStore/{fileName}.csv");
+            using var csv = new CsvReader(reader, _csvConfiguration);
+            return csv.GetRecords<T>().ToArray();
+        }
+
+        public void RemoveBooking(int bookingId)
+        {
+            var bookings = GetAllRecords<Booking>("Booking");
+
+            var bookingsToWrite = bookings.Select(booking => booking.BookingId != bookingId);
+            
+            WriteDataToCsv(bookingsToWrite, "Booking");
+        }
+
         public void WriteDataToCsv(object obj, string fileName)
         {
             var objType = obj.GetType();
@@ -87,6 +66,15 @@ namespace AirportTicketBooking
             
             csv.WriteRecord(obj);
             csv.NextRecord();
+        }
+        
+        public Flight SearchForFlightBy(string category, string value)
+        {
+            var records = GetAllRecords<Flight>("Flight");
+
+            return records.FirstOrDefault(record => category == "DepartureDate"
+                ? record.GetType().GetProperty(category)?.GetValue(record).ToString().Split(' ')[0] == value
+                : record.GetType().GetProperty(category)?.GetValue(record).ToString() == value);
         }
 
         public void ReadFlightsData(string filePath)
@@ -113,6 +101,11 @@ namespace AirportTicketBooking
 
             var lines = File.ReadAllLines(filePath);
             File.WriteAllLines($"{_currentDir}/DataStore/Flight.csv", lines);
+        }
+
+        public Flight[] GetAllFlightsData()
+        {
+            return GetAllRecords<Flight>("Flight");
         }
 
         private List<string> ValidateFlights(string pathToFile)
