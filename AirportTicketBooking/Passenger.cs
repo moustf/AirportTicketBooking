@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using CsvHelper.Configuration.Attributes;
 
 namespace AirportTicketBooking
@@ -16,7 +14,5 @@ namespace AirportTicketBooking
         public string PassportNumber { get; set; }
         [Index(4)]
         public string CreditCard { get; set; }
-        public void CancelBooking(DateTime bookingDate) {  }
-        public void EditBooking(DateTime bookingDate) {  }
     }
 }

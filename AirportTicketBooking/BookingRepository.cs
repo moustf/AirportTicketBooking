@@ -1,55 +1,37 @@
-using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace AirportTicketBooking
 {
     public class BookingRepository
     {
-        public void InsertBookings(string abolutePathToBookingsFile) {  }
+        public Booking[] SearchForBookingsBy(string prop, string value)
+        {
+            var csvio = new CSVIO();
+            
+            var bookings = csvio.GetAllRecords<Booking>("Booking");
+            var flightIdsFirst = bookings.Select(booking => booking.FlightId).ToArray();
+            var allFlights = csvio.GetAllRecords<Flight>("Flight");
+            var flightsToSearchIn = allFlights.Where(flight => flightIdsFirst.Contains(flight.FlightId)).ToArray();
+            
+            var flightIds = flightsToSearchIn.Where(
+                flight => prop == "DepartureDate"
+                ? flight.GetType().GetProperty(prop)?.GetValue(flight).ToString().Split('/')[0] == value
+                : flight.GetType().GetProperty(prop)?.GetValue(flight).ToString() == value
+                ).Select(flight => flight.FlightId);
 
-        public List<string> SearchForBookingByFlight(string flightName)
-        {
-            return new List<string>();
+            return bookings.Where(booking => flightIds.Contains(booking.FlightId)).ToArray();
         }
         
-        public List<string> SearchForBookingByPrice(string flightPrice)
+        public Booking[] SearchForBookingByPassenger(int passengerId)
         {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByDepartureCountry(string departureCountry)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByDestinationCountry(string destinationCountry)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByDepartureDate(DateTime departureDate)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByDepartureAirport(string departureAirport)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByArrivalAirport(string arrivalAirport)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByPassenger(string passengerName)
-        {
-            return new List<string>();
-        }
-        
-        public List<string> SearchForBookingByClass(string flightClass)
-        {
-            return new List<string>();
+            var csvio = new CSVIO();
+            
+            var bookings = csvio.GetAllRecords<Booking>("Booking");
+            var passengerIds = csvio.GetAllRecords<Passenger>("Passenger")
+                .Where(passenger => passenger.PassengerId == passengerId)
+                .Select(passenger => passenger.PassengerId).ToArray();
+
+            return bookings.Where(booking => passengerIds.Contains(booking.PassengerId)).ToArray();
         }
     }
 }

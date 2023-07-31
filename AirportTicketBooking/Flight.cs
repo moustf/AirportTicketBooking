@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using CsvHelper.Configuration.Attributes;
 
 namespace AirportTicketBooking
@@ -41,5 +40,10 @@ namespace AirportTicketBooking
         public string ArrivalAirport { get; set; }
         [Index(8)]
         public string AirlinesName { get; set; }
+
+        public override string ToString()
+        {
+            return $@"Flight name: {FlightName}, flight price: {FlightPrice}, departure airport: {DepartureAirport}, destination airport: {DestinationCountry}, and went on {DepartureDate}";
+        }
     }
 }

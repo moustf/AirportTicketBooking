@@ -13,7 +13,7 @@ namespace AirportTicketBooking
         public Passenger SearchForPassenger(string passengerName)
         {
             var csvio = new CSVIO();
-            var passenger = csvio.SearchForPassenger(passengerName);
+            var passenger = csvio.SearchForRecord<Passenger>("PassengerName", passengerName, "Passenger");
 
             if (passenger is null)
             {

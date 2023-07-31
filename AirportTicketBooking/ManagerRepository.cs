@@ -7,7 +7,7 @@ namespace AirportTicketBooking
         public Manager SearchForExistingManager(string name)
         {
             var csvio = new CSVIO();
-            var manager = csvio.SearchForManager(name);
+            var manager = csvio.SearchForRecord<Manager>("ManagerName", name, "Manager");
 
             if (manager is null)
             {

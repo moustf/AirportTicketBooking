@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 
 namespace AirportTicketBooking
 {
     public class ManagerFactory
     {
-        public Manager CreateNewManager()
+        public void CreateNewManager()
         {
             var rnd = new Random();
             var csvio = new CSVIO();
@@ -47,8 +46,6 @@ namespace AirportTicketBooking
             };
             
             csvio.WriteDataToCsv(manager, "Manager");
-
-            return manager;
         }
     }
 }

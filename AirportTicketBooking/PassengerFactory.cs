@@ -5,7 +5,7 @@ namespace AirportTicketBooking
 {
     public class PassengerFactory
     {
-        public Passenger CreateNewPassenger()
+        public void CreateNewPassenger()
         {
             var rnd = new Random();
             var csvio = new CSVIO();
@@ -56,8 +56,6 @@ namespace AirportTicketBooking
             };
             
             csvio.WriteDataToCsv(passenger, "Passenger");
-
-            return passenger;
         }
     }
 }
