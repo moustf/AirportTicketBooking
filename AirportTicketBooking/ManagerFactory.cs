@@ -16,7 +16,7 @@ namespace AirportTicketBooking
 
             Console.WriteLine("Please specify your name.");
             var managerName = Console.ReadLine();
-            while (String.IsNullOrWhiteSpace(managerName))
+            while (string.IsNullOrWhiteSpace(managerName))
             {
                 Console.WriteLine("Please specify a valid name!");
                 managerName = Console.ReadLine();
@@ -24,7 +24,7 @@ namespace AirportTicketBooking
             
             Console.WriteLine("Please specify your email.");
             var managerEmail = Console.ReadLine();
-            while (String.IsNullOrWhiteSpace(managerEmail))
+            while (string.IsNullOrWhiteSpace(managerEmail))
             {
                 Console.WriteLine("Please specify a valid email!");
                 managerEmail = Console.ReadLine();
@@ -32,7 +32,7 @@ namespace AirportTicketBooking
             
             Console.WriteLine("Please specify your username.");
             var managerUsername = Console.ReadLine();
-            while (String.IsNullOrWhiteSpace(managerUsername))
+            while (string.IsNullOrWhiteSpace(managerUsername))
             {
                 Console.WriteLine("Please specify a valid username!");
                 managerUsername = Console.ReadLine();

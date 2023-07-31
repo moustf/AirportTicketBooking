@@ -8,7 +8,7 @@ namespace AirportTicketBooking
     public class Flight
     {
         private string _flightClass;
-        [Index(3)]
+        [Index(2)]
         public string FlightClass
         {
             get => _flightClass;
@@ -23,23 +23,23 @@ namespace AirportTicketBooking
                 _flightClass = value;
             }
         }
-        [Index(4)]
+        [Index(3)]
         public decimal FlightPrice { get; set; }
-        [Index(2)]
-        public string FlightName { get; private set; }
         [Index(1)]
+        public string FlightName { get; private set; }
+        [Index(0)]
         public int FlightId { get; set; }
-        [Index(5)]
+        [Index(4)]
         public string DepartureCountry { get; set; }
-        [Index(6)]
+        [Index(5)]
         public string DestinationCountry { get; set; }
-        [Index(10)]
-        public DateTime DepartureDate { get; set; }
-        [Index(7)]
-        public string DepartureAirport { get; set; }
-        [Index(8)]
-        public string ArrivalAirport { get; set; }
         [Index(9)]
+        public DateTime DepartureDate { get; set; }
+        [Index(6)]
+        public string DepartureAirport { get; set; }
+        [Index(7)]
+        public string ArrivalAirport { get; set; }
+        [Index(8)]
         public string AirlinesName { get; set; }
     }
 }

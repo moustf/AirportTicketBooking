@@ -11,7 +11,8 @@ namespace AirportTicketBooking
             get => _dateOfBooking;
             set => _dateOfBooking = value.Date;
         }
-        public List<Flight> Flights { get; set; }
+        public List<int> FlightIds { get; set; }
+        public int PassengerId { get; set; }
         public int SeatsNumber { get; set; }
     }
 }

@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
+using CsvHelper.Configuration.Attributes;
 
 namespace AirportTicketBooking
 {
     public class Passenger
     {
-        public Passenger()
-        {
-            PassengerBookings = new List<Booking>();
-        }
+        [Index(0)]
         public int PassengerId { get; set; }
+        [Index(1)]
         public string PassengerName { get; set; }
+        [Index(2)]
         public string Email { get; set; }
-        public string PassengerNumber { get; set; }
+        [Index(3)]
+        public string PassportNumber { get; set; }
+        [Index(4)]
         public string CreditCard { get; set; }
-        public List<Booking> PassengerBookings { get; private set; }
-        
         public void CancelBooking(DateTime bookingDate) {  }
         public void EditBooking(DateTime bookingDate) {  }
     }

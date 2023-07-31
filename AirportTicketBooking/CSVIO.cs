@@ -18,7 +18,10 @@ namespace AirportTicketBooking
         }
         
         private readonly string _currentDir;
-        private readonly CsvConfiguration _csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+        private readonly CsvConfiguration _csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            HasHeaderRecord = false,
+        };
 
         public Manager SearchForManager(string name) 
         {
@@ -27,6 +30,14 @@ namespace AirportTicketBooking
             var records = csv.GetRecords<Manager>();
 
             return records.SingleOrDefault((record) => record.ManagerName == name);
+        }
+        public Passenger SearchForPassenger(string name) 
+        {
+            using var reader = new StreamReader($@"{_currentDir}/DataStore/Passenger.csv");
+            using var csv = new CsvReader(reader, _csvConfiguration);
+            var records = csv.GetRecords<Passenger>();
+
+            return records.SingleOrDefault((record) => record.PassengerName == name);
         }
 
         public IEnumerable<Manager> GetAllManagers()
@@ -72,7 +83,7 @@ namespace AirportTicketBooking
             
             using var stream = File.Open($@"{_currentDir}/DataStore/{fileName}.csv", FileMode.Append);
             using var writer = new StreamWriter(stream, Encoding.UTF8);
-            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            using var csv = new CsvWriter(writer, _csvConfiguration);
             
             csv.WriteRecord(obj);
             csv.NextRecord();
@@ -101,73 +112,72 @@ namespace AirportTicketBooking
             }
 
             var lines = File.ReadAllLines(filePath);
-            File.WriteAllLines($"{_currentDir}/DateStore/Flight.csv", lines);
+            File.WriteAllLines($"{_currentDir}/DataStore/Flight.csv", lines);
         }
 
-        public List<string> ValidateFlights(string pathToFile)
+        private List<string> ValidateFlights(string pathToFile)
         {
             var lines = System.IO.File.ReadAllLines(pathToFile);
-                var errors = new List<string>();
-                
-                foreach (var line in lines)
+            var errors = new List<string>();
+
+            foreach (var line in lines)
+            {
+                var values = line.Split(',');
+
+                if (!int.TryParse(values[0], out var res))
                 {
-                    var values = line.Split(',');
-                
-                    if (!int.TryParse(values[0], out var res))
-                    {
-                        errors.Add("The first column must be the flight id of type integer!");
-                    }
-                    
-                    if (values[1].Split(':').Length <= 0)
-                    {
-                        errors.Add("The name of the flight must implement this format: 'FlightId:DepartureCountry:ArrivalCountry:FlightClass'.");
-                    }
-
-                    if (values[2] != "economy" && values[2] != "business" && values[2] != "first class")
-                    {
-                        errors.Add("The flight class can either be 'economy', 'business', or 'first class'.");
-                    }
-
-                    if (decimal.TryParse(values[3], out var dRes))
-                    {
-                        errors.Add("The money must be decimal type, with floating point numbers.");
-                    }
-
-                    if (string.IsNullOrWhiteSpace(values[4]))
-                    {
-                        errors.Add("Departure country can't be null!");
-                    }
-
-                    if (string.IsNullOrWhiteSpace(values[5]))
-                    {
-                        errors.Add("Arrival country can't be null!");
-                    }
-
-                    if (string.IsNullOrWhiteSpace(values[6]))
-                    {
-                        errors.Add("Departure airport can't be null!");
-                    }
-
-                    if (string.IsNullOrWhiteSpace(values[7]))
-                    {
-                        errors.Add("Arrival airport can't be null!");
-                    }
-
-                    if (string.IsNullOrWhiteSpace(values[8]))
-                    {
-                        errors.Add("Airlines name can't be null!");
-                    }
-
-                    if (DateTime.TryParse(values[9], out var dtRes))
-                    {
-                        errors.Add("Departure time must be a valid time stamp following this format 'mm/dd/yyyy hh:mm:ss'.");
-                    }
-                    
-                    errors.Add($"The following error happende in the row with the id number: {values[0]}");
+                    errors.Add($"{values[0]}: The first column must be the flight id of type integer!");
                 }
-                return errors;
+
+                if (values[1].Split(':').Length <= 0)
+                {
+                    errors.Add(
+                        $"{values[0]}: The name of the flight must implement this format: 'FlightId:DepartureCountry:ArrivalCountry:FlightClass'.");
+                }
+
+                if (values[2] != "economy" && values[2] != "business" && values[2] != "first class")
+                {
+                    errors.Add($"{values[0]}: The flight class can either be 'economy', 'business', or 'first class'.");
+                }
+
+                if (!decimal.TryParse(values[3], out var dRes))
+                {
+                    errors.Add($"{values[0]}: The money must be decimal type, with floating point numbers.");
+                }
+
+                if (string.IsNullOrWhiteSpace(values[4]))
+                {
+                    errors.Add($"{values[0]}: Departure country can't be null!");
+                }
+
+                if (string.IsNullOrWhiteSpace(values[5]))
+                {
+                    errors.Add($"{values[0]}: Arrival country can't be null!");
+                }
+
+                if (string.IsNullOrWhiteSpace(values[6]))
+                {
+                    errors.Add($"{values[0]}: Departure airport can't be null!");
+                }
+
+                if (string.IsNullOrWhiteSpace(values[7]))
+                {
+                    errors.Add($"{values[0]}: Arrival airport can't be null!");
+                }
+
+                if (string.IsNullOrWhiteSpace(values[8]))
+                {
+                    errors.Add($"{values[0]}: Airlines name can't be null!");
+                }
+
+                if (!DateTime.TryParse(values[9], out var dtRes))
+                {
+                    errors.Add(
+                        $"{values[0]}: Departure time must be a valid time stamp following this format 'mm/dd/yyyy hh:mm:ss'.");
+                }
+            }
+
+            return errors;
         }
     }
 }
-
-
