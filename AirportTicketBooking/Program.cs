@@ -42,7 +42,7 @@ namespace AirportTicketBooking
         {
             #region Create Instances
             
-            var csvConfigurations = new CSVConfiguration();
+            var csvConfigurations = CSVConfiguration.Instance;
             var csvioService = new CSVIOService();
 
             var managerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Manager");
@@ -336,7 +336,7 @@ namespace AirportTicketBooking
 
             #region Create Instances
 
-            var csvConfigurations = new CSVConfiguration();
+            var csvConfigurations = CSVConfiguration.Instance;
             var csvioService = new CSVIOService();
             
             var passengerCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
