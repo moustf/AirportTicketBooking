@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace AirportTicketBooking
+namespace AirportTicketBooking.Managers
 {
     public class Manager
     {

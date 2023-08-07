@@ -1,16 +1,26 @@
 using System.Linq;
+using AirportTicketBooking.Flights;
+using AirportTicketBooking.Passengers;
+using CsvHelper;
 
-namespace AirportTicketBooking
+namespace AirportTicketBooking.Bookings
 {
     public class BookingRepository
     {
+        private readonly CSVIOService _csvioService;
+        private readonly CsvReader _csvReader;
+
+        public BookingRepository(CSVIOService csvioService, CsvReader csvReader)
+        {
+            _csvioService = csvioService;
+            _csvReader = csvReader;
+        }
+        
         public Booking[] SearchForBookingsBy(string prop, string value)
         {
-            var csvio = new CSVIO();
-            
-            var bookings = csvio.GetAllRecords<Booking>("Booking");
+            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
             var flightIdsFirst = bookings.Select(booking => booking.FlightId).ToArray();
-            var allFlights = csvio.GetAllRecords<Flight>("Flight");
+            var allFlights = _csvioService.GetAllRecords<Flight>("Flight", _csvReader);
             var flightsToSearchIn = allFlights.Where(flight => flightIdsFirst.Contains(flight.FlightId)).ToArray();
             
             var flightIds = flightsToSearchIn.Where(
@@ -24,14 +34,17 @@ namespace AirportTicketBooking
         
         public Booking[] SearchForBookingByPassenger(int passengerId)
         {
-            var csvio = new CSVIO();
-            
-            var bookings = csvio.GetAllRecords<Booking>("Booking");
-            var passengerIds = csvio.GetAllRecords<Passenger>("Passenger")
+            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
+            var passengerIds = _csvioService.GetAllRecords<Passenger>("Passenger", _csvReader)
                 .Where(passenger => passenger.PassengerId == passengerId)
                 .Select(passenger => passenger.PassengerId).ToArray();
 
             return bookings.Where(booking => passengerIds.Contains(booking.PassengerId)).ToArray();
+        }
+
+        public Booking[] GetBookings()
+        {
+            return  _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
         }
     }
 }

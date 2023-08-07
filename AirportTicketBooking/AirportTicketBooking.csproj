@@ -67,21 +67,38 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Booking.cs" />
-        <Compile Include="BookingFactory.cs" />
-        <Compile Include="BookingRepository.cs" />
-        <Compile Include="CSVIO.cs" />
-        <Compile Include="Flight.cs" />
-        <Compile Include="FlightFactory.cs" />
-        <Compile Include="FlightRepository.cs" />
-        <Compile Include="Manager.cs" />
-        <Compile Include="ManagerFactory.cs" />
-        <Compile Include="ManagerRepository.cs" />
-        <Compile Include="Passenger.cs" />
-        <Compile Include="PassengerFactory.cs" />
-        <Compile Include="PassengerRepository.cs" />
+        <Compile Include="Bookings\Booking.cs" />
+        <Compile Include="Bookings\BookingRepository.cs" />
+        <Compile Include="Bookings\BookingService.cs" />
+        <Compile Include="CSVIO\CSVConfiguration.cs" />
+        <Compile Include="CSVIO\CSVIOService.cs" />
+        <Compile Include="CSVIO\CSVReaderService.cs" />
+        <Compile Include="CSVIO\CSVWriterService.cs" />
+        <Compile Include="CSVIO\ReadFromCsvFile.cs" />
+        <Compile Include="CSVIO\WriteToCsvFile.cs" />
+        <Compile Include="Dtos\BookingDto.cs" />
+        <Compile Include="Dtos\ManagerDto.cs" />
+        <Compile Include="Dtos\PassengerDto.cs" />
+        <Compile Include="Enums\DoesAccountExist.cs" />
+        <Compile Include="Enums\ManagerOperations.cs" />
+        <Compile Include="Enums\PassengerOperations.cs" />
+        <Compile Include="Enums\UserRoles.cs" />
+        <Compile Include="Flights\Flight.cs" />
+        <Compile Include="Flights\FlightRepository.cs" />
+        <Compile Include="IsExternalInit.cs" />
+        <Compile Include="Managers\Manager.cs" />
+        <Compile Include="Managers\ManagerRepository.cs" />
+        <Compile Include="Managers\ManagerService.cs" />
+        <Compile Include="Passengers\Passenger.cs" />
+        <Compile Include="Passengers\PassengerService.cs" />
+        <Compile Include="Passengers\PassengerRepository.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Services\FilesServices.cs" />
+        <Compile Include="Services\Validation.cs" />
+        <Compile Include="Utility\ConsoleOutput.cs" />
+        <Compile Include="Utility\GetBookingData.cs" />
+        <Compile Include="Utility\GetUserInput.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

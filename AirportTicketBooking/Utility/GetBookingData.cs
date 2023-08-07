@@ -1,17 +1,17 @@
 using System;
+using AirportTicketBooking.Dtos;
 
-namespace AirportTicketBooking
+namespace AirportTicketBooking.Utility
 {
-    public class BookingFactory
+    public static class GetBookingData
     {
-        public Booking CreateNewBooking()
+        private static readonly Random Random = new Random();
+
+        public static BookingDto GetBookingDataFromUser()
         {
-            var rnd = new Random();
-            var csvio = new CSVIO();
-            
             Console.WriteLine("Please specify your preferred id, hit enter if you can't decide.");
             var strId = Console.ReadLine();
-            var bookingId = string.IsNullOrWhiteSpace(strId) ? rnd.Next(100, 1000) : int.Parse(strId);
+            var bookingId = string.IsNullOrWhiteSpace(strId) ? Random.Next(100, 1000) : int.Parse(strId);
 
             Console.WriteLine("Please specify the id of the flight you chose.");
             var testId  = Console.ReadLine();
@@ -39,19 +39,8 @@ namespace AirportTicketBooking
                 Console.WriteLine("Please specify a valid number of seats!");
                 testId = Console.ReadLine();
             }
-            
-            var booking = new Booking()
-            {
-                BookingId = bookingId,
-                DateOfBooking = DateTime.Now,
-                FlightId = flightId,
-                PassengerId = passengerId,
-                SeatsNumber = seatsNumber,
-            };
-            
-            csvio.WriteDataToCsv(booking, "Booking");
 
-            return booking;
+            return new BookingDto(bookingId, flightId, passengerId, seatsNumber, DateTime.Now);
         }
     }
 }
