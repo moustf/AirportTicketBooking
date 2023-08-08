@@ -8,12 +8,12 @@ namespace AirportTicketBooking.Flights
 {
     public class FlightRepository
     {
-        private readonly CsvReader _csvReader;
+        private readonly CSVReaderService _flightCsvService;
         private readonly CSVIOService _csvioService;
 
-        public FlightRepository(CsvReader csvReader, CSVIOService csvioService)
+        public FlightRepository(CSVReaderService flightCsvService, CSVIOService csvioService)
         {
-            _csvReader = csvReader;
+            _flightCsvService = flightCsvService;
             _csvioService = csvioService;
         }
         
@@ -36,7 +36,11 @@ namespace AirportTicketBooking.Flights
 
         public Flight[] GetAllFlights()
         {
-            return _csvioService.GetAllRecords<Flight>("Flight", _csvReader);
+            var flights = _csvioService.GetAllRecords<Flight>("Flight", _flightCsvService.CsvReader);
+            
+            _flightCsvService.StreamReader.Close();
+
+            return flights;
         }
         
         public Flight SearchFlightsByPrice(decimal price)
@@ -90,7 +94,9 @@ namespace AirportTicketBooking.Flights
 
         private Flight GetSingleFlightBy(string category, string value)
         {
-            var flights = _csvioService.GetAllRecords<Flight>("Flight", _csvReader);
+            var flights = _csvioService.GetAllRecords<Flight>("Flight", _flightCsvService.CsvReader);
+            
+            _flightCsvService.StreamReader.Close();
             
             return _csvioService.SearchForFlightBy(category, value, flights);
         }

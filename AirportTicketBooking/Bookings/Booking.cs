@@ -10,9 +10,11 @@ namespace AirportTicketBooking.Bookings
         public int FlightId { get; set; }
         public int PassengerId { get; set; }
         public int SeatsNumber { get; set; }
-        public void CancelBooking(int bookingId, CSVIOService csvioService, CsvReader csvReader, WriteToCsvFile writeToCsvFile)
+        public void CancelBooking(int bookingId, CSVIOService csvioService, CSVReaderService bookingCsvReader, WriteToCsvFile writeToCsvFile)
         {
-            var bookings = csvioService.GetAllRecords<Booking>("Booking", csvReader);
+            var bookings = csvioService.GetAllRecords<Booking>("Booking", bookingCsvReader.CsvReader);
+            
+            bookingCsvReader.StreamReader.Close();
             
             writeToCsvFile.WriteDataToCsv(bookings, "Booking");
         }

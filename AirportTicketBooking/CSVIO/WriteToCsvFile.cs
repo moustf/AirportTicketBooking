@@ -10,11 +10,11 @@ namespace AirportTicketBooking
 {
     public class WriteToCsvFile
     {
-        private readonly CsvWriter _csvWriter;
+        private readonly CSVWriterService _csvWriterService;
 
         public WriteToCsvFile(CSVWriterService csvWriterService)
         {
-            _csvWriter = csvWriterService.CsvWriter;
+            _csvWriterService = csvWriterService;
         }
         
         public void WriteDataToCsv(object dataObject, string fileName)
@@ -30,8 +30,10 @@ namespace AirportTicketBooking
                 throw new Exception("The objects types are not consistent!");
             }
 
-            _csvWriter.WriteRecord(dataObject);
-            _csvWriter.NextRecord();
+            _csvWriterService.CsvWriter.WriteRecord(dataObject);
+            _csvWriterService.CsvWriter.NextRecord();
+            
+            _csvWriterService.StreamWriter.Close();
         }
         
         public void WriteDataToCsv(IEnumerable<object> objects, string fileName)
@@ -47,7 +49,9 @@ namespace AirportTicketBooking
                 throw new Exception("The objects types are not consistent!");
             }
 
-            _csvWriter.WriteRecords(objects);
+            _csvWriterService.CsvWriter.WriteRecords(objects);
+            
+            _csvWriterService.StreamWriter.Close();
         }
     }
 }

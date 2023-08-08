@@ -50,8 +50,8 @@ namespace AirportTicketBooking
             var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
             
             var managerRepo = new ManagerRepository();
-            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader, flightCsvReader.CsvReader, passengerCsvReader.CsvReader);
-            var flightRepo = new FlightRepository(flightCsvReader.CsvReader, csvioService);
+            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader, flightCsvReader, passengerCsvReader);
+            var flightRepo = new FlightRepository(flightCsvReader, csvioService);
             var readFromCsvFile = new ReadFromCsvFile();
             var fileServices = new FileServices();
             var validation = new Validation();
@@ -68,9 +68,7 @@ namespace AirportTicketBooking
                     
                     var managerName = GetUserInput.GetStringData("name");
                     
-                    var manager = managerRepo.SearchForExistingManager(managerName, csvioService, managerCsvReader.CsvReader);
-                    
-                    managerCsvReader.StreamReader.Close();
+                    var manager = managerRepo.SearchForExistingManager(managerName, csvioService, managerCsvReader);
 
                     if (manager is null)
                     {
@@ -100,9 +98,7 @@ namespace AirportTicketBooking
                     var manager = managerFactory.CreateNewManager(managerDto);
                     
                     writeToManagerCsvFile.WriteDataToCsv(manager, "Manager");
-                    
-                    managerCsvWriter.StreamWriter.Close();
-                    
+
                     break;
                 }
                 default:
@@ -344,18 +340,15 @@ namespace AirportTicketBooking
         private static void HandlePassengerCreation()
         {
 
-            #region Create Instances
+            #region Create Instances One
 
             var csvConfigurations = CSVConfiguration.Instance;
             var csvioService = new CSVIOService();
 
-            var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
             var flightCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Flight");
-            var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
             
             var passengerRepo = new PassengerRepository();
-            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader, flightCsvReader.CsvReader, passengerCsvReader.CsvReader);
-            var flightRepo = new FlightRepository(flightCsvReader.CsvReader, csvioService);
+            var flightRepo = new FlightRepository(flightCsvReader, csvioService);
             var bookingService = new BookingService();
             var booking = new Booking();
 
@@ -367,6 +360,8 @@ namespace AirportTicketBooking
             {
                 case DoesAccountExist.Yes:
                 {
+                    var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
+                    
                     var passengerName = GetUserInput.GetStringData("passenger name");
 
                     var passenger = passengerRepo.SearchForPassenger(passengerName, csvioService, passengerCsvReader.CsvReader);
@@ -580,6 +575,8 @@ namespace AirportTicketBooking
                 }
                 case PassengerOperations.CancelABooking:
                 {
+                    var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
+
                     var bookingId = GetUserInput.GetIntegerFromUser("booking id");
                     
                     var editedBooking = booking.EditBooking(bookingId, csvioService, bookingCsvReader.CsvReader);
@@ -589,18 +586,23 @@ namespace AirportTicketBooking
                 }
                 case PassengerOperations.ModifyABooking:
                 {
+                    var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
                     var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
                     var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
                     
                     var bookingId = GetUserInput.GetIntegerFromUser("booking id");
                     
-                    booking.CancelBooking(bookingId, csvioService, bookingCsvReader.CsvReader, writeToBookingCsvFile);
+                    booking.CancelBooking(bookingId, csvioService, bookingCsvReader, writeToBookingCsvFile);
                     
                     ConsoleOutput.PrintGeneralMessage($"Booking with {bookingId} got deleted successfully!");
                     break;
                 }
                 case PassengerOperations.GetBookings:
                 {
+                    var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
+                    var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
+                    var bookingRepo = new BookingRepository(csvioService, bookingCsvReader, flightCsvReader, passengerCsvReader);
+
                     var bookings = bookingRepo.GetBookings();
 
                     if (bookings.Length > 0)
