@@ -8,19 +8,23 @@ namespace AirportTicketBooking.Bookings
     public class BookingRepository
     {
         private readonly CSVIOService _csvioService;
-        private readonly CsvReader _csvReader;
+        private readonly CsvReader _bookingCsvReader;
+        private readonly CsvReader _flightCsvReader;
+        private readonly CsvReader _passengerCsvReader;
 
-        public BookingRepository(CSVIOService csvioService, CsvReader csvReader)
+        public BookingRepository(CSVIOService csvioService, CsvReader bookingCsvReader, CsvReader flightCsvReader, CsvReader passengerCsvReader)
         {
             _csvioService = csvioService;
-            _csvReader = csvReader;
+            _bookingCsvReader = bookingCsvReader;
+            _flightCsvReader = flightCsvReader;
+            _passengerCsvReader = passengerCsvReader;
         }
         
         public Booking[] SearchForBookingsBy(string prop, string value)
         {
-            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
+            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _bookingCsvReader);
             var flightIdsFirst = bookings.Select(booking => booking.FlightId).ToArray();
-            var allFlights = _csvioService.GetAllRecords<Flight>("Flight", _csvReader);
+            var allFlights = _csvioService.GetAllRecords<Flight>("Flight", _flightCsvReader);
             var flightsToSearchIn = allFlights.Where(flight => flightIdsFirst.Contains(flight.FlightId)).ToArray();
             
             var flightIds = flightsToSearchIn.Where(
@@ -34,8 +38,8 @@ namespace AirportTicketBooking.Bookings
         
         public Booking[] SearchForBookingByPassenger(int passengerId)
         {
-            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
-            var passengerIds = _csvioService.GetAllRecords<Passenger>("Passenger", _csvReader)
+            var bookings = _csvioService.GetAllRecords<Booking>("Booking", _bookingCsvReader);
+            var passengerIds = _csvioService.GetAllRecords<Passenger>("Passenger", _passengerCsvReader)
                 .Where(passenger => passenger.PassengerId == passengerId)
                 .Select(passenger => passenger.PassengerId).ToArray();
 
@@ -44,7 +48,7 @@ namespace AirportTicketBooking.Bookings
 
         public Booking[] GetBookings()
         {
-            return  _csvioService.GetAllRecords<Booking>("Booking", _csvReader);
+            return  _csvioService.GetAllRecords<Booking>("Booking", _bookingCsvReader);
         }
     }
 }

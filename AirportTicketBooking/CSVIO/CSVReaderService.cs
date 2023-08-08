@@ -8,10 +8,11 @@ namespace AirportTicketBooking
     {
         public CSVReaderService(string currentDirectory, CsvConfiguration csvConfiguration, string fileName)
         {
-            var streamReader = new StreamReader($@"{currentDirectory}/DataStore/{fileName}.csv");
-            CsvReader = new CsvReader(streamReader, csvConfiguration);
+            StreamReader = new StreamReader($@"{currentDirectory}/DataStore/{fileName}.csv");
+            CsvReader = new CsvReader(StreamReader, csvConfiguration);
         }
         
+        public StreamReader StreamReader { get; private set; }
         public CsvReader CsvReader { get; private set; }
     }
 }

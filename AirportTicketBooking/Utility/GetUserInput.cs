@@ -102,7 +102,7 @@ namespace AirportTicketBooking.Utility
             Console.WriteLine("Flight classes can either be 'economy', 'business', or 'first class'.");
             var flightClass = Console.ReadLine();
 
-            while (flightClass != "economy" || flightClass != "business" ||  flightClass != "first class")
+            while (flightClass != "economy" && flightClass != "business" &&  flightClass != "first class")
             {
                 Console.WriteLine("Please specify a valid flight class!");
                 flightClass = Console.ReadLine();

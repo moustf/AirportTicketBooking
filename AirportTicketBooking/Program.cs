@@ -44,13 +44,13 @@ namespace AirportTicketBooking
             
             var csvConfigurations = CSVConfiguration.Instance;
             var csvioService = new CSVIOService();
-
-            var managerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Manager");
+            
             var flightCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Flight");
             var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
+            var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
             
             var managerRepo = new ManagerRepository();
-            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader);
+            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader, flightCsvReader.CsvReader, passengerCsvReader.CsvReader);
             var flightRepo = new FlightRepository(flightCsvReader.CsvReader, csvioService);
             var readFromCsvFile = new ReadFromCsvFile();
             var fileServices = new FileServices();
@@ -64,11 +64,19 @@ namespace AirportTicketBooking
             {
                 case DoesAccountExist.Yes:
                 {
+                    var managerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Manager");
+                    
                     var managerName = GetUserInput.GetStringData("name");
                     
                     var manager = managerRepo.SearchForExistingManager(managerName, csvioService, managerCsvReader.CsvReader);
                     
-                    if (manager is null) ConsoleOutput.NoDataFoundMessage("managers");
+                    managerCsvReader.StreamReader.Close();
+
+                    if (manager is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("managers");
+                        Environment.Exit(1);
+                    }
                     
                     ConsoleOutput.ShowManagerDetails(manager!.ManagerId, manager.ManagerName, manager.Email);
                     break;
@@ -92,6 +100,8 @@ namespace AirportTicketBooking
                     var manager = managerFactory.CreateNewManager(managerDto);
                     
                     writeToManagerCsvFile.WriteDataToCsv(manager, "Manager");
+                    
+                    managerCsvWriter.StreamWriter.Close();
                     
                     break;
                 }
@@ -135,7 +145,7 @@ namespace AirportTicketBooking
                 }
                 case ManagerOperations.SearchByFlightId:
                 {
-                    var flightId = GetUserInput.GetIdFromUser();
+                    var flightId = GetUserInput.GetIntegerFromUser("flight id");
 
                     var bookings = bookingRepo.SearchForBookingsBy("FlightId", flightId.ToString());
 
@@ -303,7 +313,7 @@ namespace AirportTicketBooking
                 }
                 case ManagerOperations.SearchByPassengerId:
                 {
-                    var passengerId = GetUserInput.GetIdFromUser();
+                    var passengerId = GetUserInput.GetIntegerFromUser("passenger id");
 
                     var bookings = bookingRepo.SearchForBookingByPassenger(passengerId);
 
@@ -338,19 +348,13 @@ namespace AirportTicketBooking
 
             var csvConfigurations = CSVConfiguration.Instance;
             var csvioService = new CSVIOService();
-            
-            var passengerCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
-            var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
 
-            var writeToPassengerCsvFile = new WriteToCsvFile(passengerCsvWriter);
-            var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
-            
             var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
             var flightCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Flight");
             var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
             
             var passengerRepo = new PassengerRepository();
-            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader);
+            var bookingRepo = new BookingRepository(csvioService, bookingCsvReader.CsvReader, flightCsvReader.CsvReader, passengerCsvReader.CsvReader);
             var flightRepo = new FlightRepository(flightCsvReader.CsvReader, csvioService);
             var bookingService = new BookingService();
             var booking = new Booking();
@@ -366,8 +370,12 @@ namespace AirportTicketBooking
                     var passengerName = GetUserInput.GetStringData("passenger name");
 
                     var passenger = passengerRepo.SearchForPassenger(passengerName, csvioService, passengerCsvReader.CsvReader);
-                    
-                    if (passenger is null) ConsoleOutput.NoDataFoundMessage("passengers");
+
+                    if (passenger is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("passengers");
+                        Environment.Exit(1);
+                    }
                     
                     ConsoleOutput.ShowPassengerDetails(passenger!.PassengerId, passenger.PassengerName, passenger.Email);
                     
@@ -375,6 +383,9 @@ namespace AirportTicketBooking
                 }
                 case DoesAccountExist.No:
                 {
+                    var passengerCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
+                    var writeToPassengerCsvFile = new WriteToCsvFile(passengerCsvWriter);
+
                     var passengerFactory = new PassengerService();
 
                     var passengerId = GetUserInput.GetIdFromUser();
@@ -394,6 +405,8 @@ namespace AirportTicketBooking
                     var passenger = passengerFactory.CreateNewPassenger(passengerDto);
                     
                     writeToPassengerCsvFile.WriteDataToCsv(passenger, "Passenger");
+                    
+                    passengerCsvWriter.StreamWriter.Close();
                     
                     break;
                 }
@@ -433,8 +446,12 @@ namespace AirportTicketBooking
                     var flightPrice = GetUserInput.GetDecimalData("flight price");
                     
                     var flight = flightRepo.SearchFlightsByPrice(flightPrice);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -445,8 +462,12 @@ namespace AirportTicketBooking
                     var departureCountry = GetUserInput.GetStringData("departure country");
                     
                     var flight = flightRepo.SearchFlightsByDepartureCountry(departureCountry);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -457,8 +478,12 @@ namespace AirportTicketBooking
                     var destinationCountry = GetUserInput.GetStringData("destination country");
                     
                     var flight = flightRepo.SearchFlightsByDestinationCountry(destinationCountry);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -469,8 +494,12 @@ namespace AirportTicketBooking
                     var departureDate = GetUserInput.GetDateOnlyData("departure date");
                     
                     var flight = flightRepo.SearchFlightsByDepartureDate(departureDate);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -481,8 +510,12 @@ namespace AirportTicketBooking
                     var departureAirport = GetUserInput.GetStringData("departure airport");
                     
                     var flight = flightRepo.SearchFlightsByDepartureAirport(departureAirport);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -493,8 +526,12 @@ namespace AirportTicketBooking
                     var departureAirport = GetUserInput.GetStringData("departure airport");
                     
                     var flight = flightRepo.SearchFlightsByArrivalAirport(departureAirport);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -505,8 +542,12 @@ namespace AirportTicketBooking
                     var flightClass = GetUserInput.GetStringData("flight class");
                     
                     var flight = flightRepo.SearchFlightsByFlightClass(flightClass);
-                    
-                    if (flight is null) ConsoleOutput.NoDataFoundMessage("flights");
+
+                    if (flight is null)
+                    {
+                        ConsoleOutput.NoDataFoundMessage("flights");
+                        Environment.Exit(1);
+                    }
 
                     ConsoleOutput.PrintGeneralMessage(flight!.ToString());
                     
@@ -514,6 +555,9 @@ namespace AirportTicketBooking
                 }
                 case PassengerOperations.MakeABooking:
                 {
+                    var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
+                    var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
+                    
                     var bookingId = GetUserInput.GetIdFromUser();
                     var flightId = GetUserInput.GetIntegerFromUser("flight id");
                     var passengerId = GetUserInput.GetIntegerFromUser("passenger id");
@@ -545,6 +589,9 @@ namespace AirportTicketBooking
                 }
                 case PassengerOperations.ModifyABooking:
                 {
+                    var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
+                    var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
+                    
                     var bookingId = GetUserInput.GetIntegerFromUser("booking id");
                     
                     booking.CancelBooking(bookingId, csvioService, bookingCsvReader.CsvReader, writeToBookingCsvFile);
