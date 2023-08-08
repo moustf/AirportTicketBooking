@@ -6,13 +6,13 @@ namespace AirportTicketBooking.Flights
     public class Flight
     {
         [Index(2)]
-        public string FlightClass { get; init; }
+        public string Class { get; init; }
         [Index(3)]
-        public decimal FlightPrice { get; set; }
+        public decimal Price { get; set; }
         [Index(1)]
-        public string FlightName { get; set; }
+        public string Name { get; set; }
         [Index(0)]
-        public int FlightId { get; init; }
+        public int Id { get; init; }
         [Index(4)]
         public string DepartureCountry { get; init; }
         [Index(5)]
@@ -28,7 +28,7 @@ namespace AirportTicketBooking.Flights
 
         public override string ToString()
         {
-            return $@"Flight name: {FlightName}, flight price: {FlightPrice}, departure airport: {DepartureAirport}, destination airport: {DestinationCountry}, and went on {DepartureDate}";
+            return $@"Flight name: {Name}, flight price: {Price}, departure airport: {DepartureAirport}, destination airport: {DestinationCountry}, and went on {DepartureDate}";
         }
     }
 }

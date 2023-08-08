@@ -17,7 +17,7 @@ namespace AirportTicketBooking.Flights
             _csvioService = csvioService;
         }
         
-        public void InsertFlights(string filePath, ReadFromCsvFile readFromCsvFile, FileServices fileServices, Validation validation)
+        public void InsertFlights(string filePath, ReadFromCsvFile readFromCsvFile, FileServices fileServices, FlightValidationService flightValidationService)
         {
             if (!filePath.Contains(".csv"))
             {
@@ -26,17 +26,17 @@ namespace AirportTicketBooking.Flights
 
             if (File.Exists(filePath))
             {
-                readFromCsvFile.RegisterFlightsData(filePath, fileServices, validation);
+                readFromCsvFile.RegisterFlightsData(filePath, fileServices, flightValidationService);
             }
             else
             {
-                throw new NullReferenceException("The file you are trying to access doesn't exist!");
+                throw new FileNotFoundException("The file you are trying to access doesn't exist!");
             }
         }
 
         public Flight[] GetAllFlights()
         {
-            var flights = _csvioService.GetAllRecords<Flight>("Flight", _flightCsvService.CsvReader);
+            var flights = _csvioService.GetAllRecords<Flight>(_flightCsvService.CsvReader);
             
             _flightCsvService.StreamReader.Close();
 
@@ -45,56 +45,42 @@ namespace AirportTicketBooking.Flights
         
         public Flight SearchFlightsByPrice(decimal price)
         {
-            var flight = GetSingleFlightBy("FlightPrice", price.ToString(CultureInfo.InvariantCulture));
-
-            return flight;
+            return GetSingleFlightBy("FlightPrice", price.ToString(CultureInfo.InvariantCulture));
         }
         
         public Flight SearchFlightsByDepartureCountry(string departureCountry)
         {
-            var flight = GetSingleFlightBy("DepartureCountry", departureCountry);
-            
-            return flight;
+            return GetSingleFlightBy("DepartureCountry", departureCountry);
         }
         
         public Flight SearchFlightsByDestinationCountry(string destinationCountry)
         {
-            var flight = GetSingleFlightBy("DestinationCountry", destinationCountry);
-
-            return flight;
+            return GetSingleFlightBy("DestinationCountry", destinationCountry);
         }
         
         public Flight SearchFlightsByDepartureDate(string departureDate)
         {
-            var flight = GetSingleFlightBy("DepartureDate", departureDate);
-
-            return flight;
+            return GetSingleFlightBy("DepartureDate", departureDate);
         }
         
         public Flight SearchFlightsByDepartureAirport(string departureAirport)
         {
-            var flight = GetSingleFlightBy("DepartureAirport", departureAirport);
-            
-            return flight;
+            return GetSingleFlightBy("DepartureAirport", departureAirport);
         }
         
         public Flight SearchFlightsByArrivalAirport(string arrivalAirport)
         {
-            var flight = GetSingleFlightBy("DepartureAirport", arrivalAirport);
-
-            return flight;
+            return GetSingleFlightBy("DepartureAirport", arrivalAirport);
         }
         
         public Flight SearchFlightsByFlightClass(string flightClass)
         {
-            var flight = GetSingleFlightBy("DepartureAirport", flightClass);
-
-            return flight;
+            return GetSingleFlightBy("DepartureAirport", flightClass);
         }
 
         private Flight GetSingleFlightBy(string category, string value)
         {
-            var flights = _csvioService.GetAllRecords<Flight>("Flight", _flightCsvService.CsvReader);
+            var flights = _csvioService.GetAllRecords<Flight>(_flightCsvService.CsvReader);
             
             _flightCsvService.StreamReader.Close();
             

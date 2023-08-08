@@ -4,7 +4,7 @@ using AirportTicketBooking.Enums;
 
 namespace AirportTicketBooking.Utility
 {
-    public static class GetUserInput
+    public static class UserInputUtility
     {
         private static readonly Random Random = new Random();
         
@@ -131,14 +131,14 @@ namespace AirportTicketBooking.Utility
         {
             Console.WriteLine("Do you have an account? 1 for having an account, and 2 for new users.");
             var choiceTest = Console.ReadLine();
-            int choice;
-
-            while (!int.TryParse(choiceTest, out choice))
+            int doesAccountExist;
+            
+            while (!int.TryParse(choiceTest, out doesAccountExist))
             {
                 Console.WriteLine("Please specify a valid number!");
             }
 
-            return choice == 1 ? DoesAccountExist.Yes : choice == 2 ? DoesAccountExist.No : null;
+            return doesAccountExist == 1 ? DoesAccountExist.Yes : doesAccountExist == 2 ? DoesAccountExist.No : null;
         }
 
         public static ManagerOperations? GetManagerOperation()
@@ -157,13 +157,13 @@ namespace AirportTicketBooking.Utility
             Console.WriteLine("0 --> Exit.");
             
             var choiceTest = Console.ReadLine();
-            int choice;
-            while (!int.TryParse(choiceTest, out choice))
+            int managerOperation;
+            while (!int.TryParse(choiceTest, out managerOperation))
             {
                 Console.WriteLine("Please specify a valid number!");
             }
 
-            return choice switch
+            return managerOperation switch
             {
                 1 => ManagerOperations.ImportFlights,
                 2 => ManagerOperations.SearchByFlightId,
@@ -199,13 +199,14 @@ namespace AirportTicketBooking.Utility
             Console.WriteLine("0 --> Exit.");
             
             var choiceTest = Console.ReadLine();
-            int choice;
-            while (!int.TryParse(choiceTest, out choice))
+            int passengerOperation;
+            
+            while (!int.TryParse(choiceTest, out passengerOperation))
             {
                 Console.WriteLine("Please specify a valid number!");
             }
 
-            return choice switch
+            return passengerOperation switch
             {
                 0 => PassengerOperations.Exit,
                 1 => PassengerOperations.GetFlights,

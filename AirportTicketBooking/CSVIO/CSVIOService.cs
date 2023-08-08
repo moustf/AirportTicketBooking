@@ -7,14 +7,14 @@ namespace AirportTicketBooking
 {
     public class CSVIOService
     {
-        public T SearchForRecord<T>(string prop, string value, CsvReader csv) 
+        public T SearchForRecord<T>(string property, string value, CsvReader csv) 
         {
             var records = csv.GetRecords<T>();
 
-            return records.FirstOrDefault((record) => record.GetType().GetProperty(prop)?.GetValue(record).ToString() == value);
+            return records.FirstOrDefault((record) => record.GetType().GetProperty(property)?.GetValue(record).ToString() == value);
         }
         
-        public T[] GetAllRecords<T>(string fileName, CsvReader csv)
+        public T[] GetAllRecords<T>(CsvReader csv)
         {
             return csv.GetRecords<T>().ToArray();
         }

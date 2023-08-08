@@ -8,8 +8,8 @@ namespace AirportTicketBooking.Passengers
         {
             var passenger = new Passenger()
             {
-                PassengerId = passengerData.Id,
-                PassengerName = passengerData.Name,
+                Id = passengerData.Id, 
+                Name = passengerData.Name,
                 Email = passengerData.Email,
                 PassportNumber = passengerData.PassportNumber,
                 CreditCard = passengerData.CreditCardNumber,

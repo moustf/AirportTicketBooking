@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AirportTicketBooking.Services
 {
-    public class Validation
+    public class FlightValidationService
     {
         public List<string> ValidateFlights(string[] csvLines)
         {

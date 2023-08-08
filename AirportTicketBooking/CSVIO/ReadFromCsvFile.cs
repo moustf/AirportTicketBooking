@@ -6,10 +6,10 @@ namespace AirportTicketBooking
 {
     public class ReadFromCsvFile
     {
-        public void RegisterFlightsData(string filePath, FileServices fileServices, Validation validation)
+        public void RegisterFlightsData(string filePath, FileServices fileServices, FlightValidationService flightValidationService)
         {
             var fileLines = fileServices.ReadCsvFile(filePath);
-                var csvValidationErrors = validation.ValidateFlights(fileLines);
+                var csvValidationErrors = flightValidationService.ValidateFlights(fileLines);
 
                 if (csvValidationErrors.Any())
                 {

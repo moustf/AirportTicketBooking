@@ -5,9 +5,9 @@ namespace AirportTicketBooking.Passengers
     public class Passenger
     {
         [Index(0)]
-        public int PassengerId { get; init; }
+        public int Id { get; init; }
         [Index(1)]
-        public string PassengerName { get; init; }
+        public string Name { get; init; }
         [Index(2)]
         public string Email { get; init; }
         [Index(3)]

@@ -8,8 +8,8 @@ namespace AirportTicketBooking.Managers
         {
             var manager = new Manager()
             {
-                ManagerId = managerData.Id,
-                ManagerName = managerData.Name,
+                Id = managerData.Id,
+                Name = managerData.Name,
                 Email = managerData.Email,
                 Username = managerData.Username
             };

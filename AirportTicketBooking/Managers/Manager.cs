@@ -6,10 +6,10 @@ namespace AirportTicketBooking.Managers
     {
         [Name("ManagerId")]
         [Index(0)]
-        public int ManagerId { get; set; }
+        public int Id { get; set; }
         [Index(1)]
         [Name("ManagerName")]
-        public string ManagerName { get; set; }
+        public string Name { get; set; }
         [Index(2)]
         [Name("Email")]
         public string Email { get; set; }

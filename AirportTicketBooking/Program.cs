@@ -15,7 +15,7 @@ namespace AirportTicketBooking
     {
         public static void Main(string[] args)
         {
-            var userRole = GetUserInput.GetUserRole();
+            var userRole = UserInputUtility.GetUserRole();
             
             switch (userRole)
             {
@@ -54,11 +54,11 @@ namespace AirportTicketBooking
             var flightRepo = new FlightRepository(flightCsvReader, csvioService);
             var readFromCsvFile = new ReadFromCsvFile();
             var fileServices = new FileServices();
-            var validation = new Validation();
+            var validation = new FlightValidationService();
 
             #endregion
 
-            var doesAccountExist = GetUserInput.GetUserAccountStatus();
+            var doesAccountExist = UserInputUtility.GetUserAccountStatus();
 
             switch (doesAccountExist)
             {
@@ -66,17 +66,18 @@ namespace AirportTicketBooking
                 {
                     var managerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Manager");
                     
-                    var managerName = GetUserInput.GetStringData("name");
+                    var managerName = UserInputUtility.GetStringData("name");
                     
                     var manager = managerRepo.SearchForExistingManager(managerName, csvioService, managerCsvReader);
 
                     if (manager is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("managers");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("managers"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandleManagerCreation();
                     }
                     
-                    ConsoleOutput.ShowManagerDetails(manager!.ManagerId, manager.ManagerName, manager.Email);
+                    Console.WriteLine(ConsoleOutputUtility.ShowManagerDetails(manager!.Id, manager.Name, manager.Email));
                     break;
                 }
                 case DoesAccountExist.No:
@@ -87,10 +88,10 @@ namespace AirportTicketBooking
                     var writeToManagerCsvFile = new WriteToCsvFile(managerCsvWriter);
 
                     
-                    var managerId = GetUserInput.GetIdFromUser();
-                    var managerName = GetUserInput.GetStringData("manager name");
-                    var managerEmail = GetUserInput.GetStringData("manager email");
-                    var managerUsername = GetUserInput.GetStringData("manager username");
+                    var managerId = UserInputUtility.GetIdFromUser();
+                    var managerName = UserInputUtility.GetStringData("manager name");
+                    var managerEmail = UserInputUtility.GetStringData("manager email");
+                    var managerUsername = UserInputUtility.GetStringData("manager username");
 
                     var managerDto = new ManagerDto(managerId, managerName, managerEmail, managerUsername);
 
@@ -103,13 +104,13 @@ namespace AirportTicketBooking
                 }
                 default:
                 {
-                    ConsoleOutput.PrintGeneralMessage("Invalid value for the user choice!");
+                    Console.WriteLine("Invalid value for the user choice!");
                     Environment.Exit(1);
                     break;
                 }
             }
             
-            var managerOperationChoice = GetUserInput.GetManagerOperation();
+            var managerOperationChoice = UserInputUtility.GetManagerOperation();
 
             switch (managerOperationChoice)
             {
@@ -120,7 +121,7 @@ namespace AirportTicketBooking
                 }
                 case ManagerOperations.ImportFlights:
                 {
-                    var flightsFilePath = GetUserInput.GetStringData("the path to the flights file");
+                    var flightsFilePath = UserInputUtility.GetStringData("the path to the flights file");
 
                     try
                     {
@@ -130,18 +131,20 @@ namespace AirportTicketBooking
                     {
                         if (e.Message.StartsWith("Sharing violation"))
                         {
-                            ConsoleOutput.PrintGeneralMessage("You can't insert the same file in the DataStore file!");
-                            Environment.Exit(1);
+                            Console.WriteLine("You can't insert the same file in the DataStore file!");
+                            Console.WriteLine("You will be redirected to the start of the program.");
+                            HandleManagerCreation();
                         }
                         
-                        ConsoleOutput.PrintGeneralMessage(e.Message);
-                        Environment.Exit(1);
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandleManagerCreation();
                     }
                     break;
                 }
                 case ManagerOperations.SearchByFlightId:
                 {
-                    var flightId = GetUserInput.GetIntegerFromUser("flight id");
+                    var flightId = UserInputUtility.GetIntegerFromUser("flight id");
 
                     var bookings = bookingRepo.SearchForBookingsBy("FlightId", flightId.ToString());
 
@@ -149,20 +152,21 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByFlightPrice:
                 {
-                    var flightPrice = GetUserInput.GetDecimalData("flight price");
+                    var flightPrice = UserInputUtility.GetDecimalData("flight price");
 
                     var bookings = bookingRepo.SearchForBookingsBy("FlightPrice", flightPrice.ToString(CultureInfo.InvariantCulture));
 
@@ -170,20 +174,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByDepartureCountry:
                 {
-                    var departureCountry = GetUserInput.GetStringData("departure country");
+                    var departureCountry = UserInputUtility.GetStringData("departure country");
 
                     var bookings = bookingRepo.SearchForBookingsBy("DepartureCountry", departureCountry);
 
@@ -191,20 +195,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByDestinationCountry:
                 {
-                    var destinationCountry = GetUserInput.GetStringData("destination country");
+                    var destinationCountry = UserInputUtility.GetStringData("destination country");
 
                     var bookings = bookingRepo.SearchForBookingsBy("DestinationCountry", destinationCountry);
 
@@ -212,20 +216,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByDepartureDate:
                 {
-                    var departureDate = GetUserInput.GetDateOnlyData("departure date");
+                    var departureDate = UserInputUtility.GetDateOnlyData("departure date");
 
                     var bookings = bookingRepo.SearchForBookingsBy("DepartureDate", departureDate);
 
@@ -233,20 +237,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByDepartureAirport:
                 {
-                    var departureAirport = GetUserInput.GetStringData("departure airport");
+                    var departureAirport = UserInputUtility.GetStringData("departure airport");
 
                     var bookings = bookingRepo.SearchForBookingsBy("DepartureAirport", departureAirport);
 
@@ -254,20 +258,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByArrivalAirport:
                 {
-                    var arrivalAirport = GetUserInput.GetStringData("arrival airport");
+                    var arrivalAirport = UserInputUtility.GetStringData("arrival airport");
 
                     var bookings = bookingRepo.SearchForBookingsBy("DepartureAirport", arrivalAirport);
 
@@ -275,20 +279,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByFlightClass:
                 {
-                    var flightClass = GetUserInput.GetFlightClassCategory();
+                    var flightClass = UserInputUtility.GetFlightClassCategory();
 
                     var bookings = bookingRepo.SearchForBookingsBy("FlightClass", flightClass);
 
@@ -296,20 +300,20 @@ namespace AirportTicketBooking
                     {
                         foreach (var booking in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(booking.ToString());
+                            Console.WriteLine(booking.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        HandleManagerCreation();
                     }
 
                     break;
                 }
                 case ManagerOperations.SearchByPassengerId:
                 {
-                    var passengerId = GetUserInput.GetIntegerFromUser("passenger id");
+                    var passengerId = UserInputUtility.GetIntegerFromUser("passenger id");
 
                     var bookings = bookingRepo.SearchForBookingByPassenger(passengerId);
 
@@ -323,7 +327,7 @@ namespace AirportTicketBooking
                     else
                     {
                         Console.WriteLine("There is no bookings for this passenger id value.");
-                        Environment.Exit(1);
+                        HandleManagerCreation();
                     }
 
                     break;
@@ -354,7 +358,7 @@ namespace AirportTicketBooking
 
             #endregion
             
-            var doesAccountExist = GetUserInput.GetUserAccountStatus();
+            var doesAccountExist = UserInputUtility.GetUserAccountStatus();
 
             switch (doesAccountExist)
             {
@@ -362,17 +366,17 @@ namespace AirportTicketBooking
                 {
                     var passengerCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Passenger");
                     
-                    var passengerName = GetUserInput.GetStringData("passenger name");
+                    var passengerName = UserInputUtility.GetStringData("passenger name");
 
                     var passenger = passengerRepo.SearchForPassenger(passengerName, csvioService, passengerCsvReader.CsvReader);
 
                     if (passenger is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("passengers");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("passengers"));
+                        HandlePassengerCreation();
                     }
                     
-                    ConsoleOutput.ShowPassengerDetails(passenger!.PassengerId, passenger.PassengerName, passenger.Email);
+                    Console.WriteLine(ConsoleOutputUtility.ShowPassengerDetails(passenger!.Id, passenger.Name, passenger.Email));
                     
                     break;
                 }
@@ -383,11 +387,11 @@ namespace AirportTicketBooking
 
                     var passengerFactory = new PassengerService();
 
-                    var passengerId = GetUserInput.GetIdFromUser();
-                    var passengerName = GetUserInput.GetStringData("passenger name");
-                    var passengerEmail = GetUserInput.GetStringData("passenger email");
-                    var passengerPassportNumber = GetUserInput.GetPassportNumber();
-                    var passengerCreditCardNumber = GetUserInput.GetCreditCardNumber();
+                    var passengerId = UserInputUtility.GetIdFromUser();
+                    var passengerName = UserInputUtility.GetStringData("passenger name");
+                    var passengerEmail = UserInputUtility.GetStringData("passenger email");
+                    var passengerPassportNumber = UserInputUtility.GetPassportNumber();
+                    var passengerCreditCardNumber = UserInputUtility.GetCreditCardNumber();
 
                     var passengerDto = new PassengerDto(
                         passengerId,
@@ -407,16 +411,21 @@ namespace AirportTicketBooking
                 }
                 default:
                 {
-                    ConsoleOutput.PrintGeneralMessage("Invalid value for the user choice!");
+                    Console.WriteLine("Invalid value for the user choice!");
                     Environment.Exit(1);
                     break;
                 }
             }
 
-            var passengerOperation = GetUserInput.GetPassengerOperations();
+            var passengerOperation = UserInputUtility.GetPassengerOperations();
 
             switch (passengerOperation)
             {
+                case PassengerOperations.Exit:
+                {
+                    Environment.Exit(0);
+                    break;
+                }
                 case PassengerOperations.GetFlights:
                 {
                     var flights = flightRepo.GetAllFlights();
@@ -425,126 +434,134 @@ namespace AirportTicketBooking
                     {
                         foreach (var flight in flights)
                         {
-                            ConsoleOutput.PrintGeneralMessage(flight.ToString());
+                            Console.WriteLine(flight.ToString());
                         } 
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
                     
                     break;
                 }
                 case PassengerOperations.SearchByFlightPrice:
                 {
-                    var flightPrice = GetUserInput.GetDecimalData("flight price");
+                    var flightPrice = UserInputUtility.GetDecimalData("flight price");
                     
                     var flight = flightRepo.SearchFlightsByPrice(flightPrice);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByDepartureCountry:
                 {
-                    var departureCountry = GetUserInput.GetStringData("departure country");
+                    var departureCountry = UserInputUtility.GetStringData("departure country");
                     
                     var flight = flightRepo.SearchFlightsByDepartureCountry(departureCountry);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByDestinationCountry:
                 {
-                    var destinationCountry = GetUserInput.GetStringData("destination country");
+                    var destinationCountry = UserInputUtility.GetStringData("destination country");
                     
                     var flight = flightRepo.SearchFlightsByDestinationCountry(destinationCountry);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByDepartureDate:
                 {
-                    var departureDate = GetUserInput.GetDateOnlyData("departure date");
+                    var departureDate = UserInputUtility.GetDateOnlyData("departure date");
                     
                     var flight = flightRepo.SearchFlightsByDepartureDate(departureDate);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByDepartureAirport:
                 {
-                    var departureAirport = GetUserInput.GetStringData("departure airport");
+                    var departureAirport = UserInputUtility.GetStringData("departure airport");
                     
                     var flight = flightRepo.SearchFlightsByDepartureAirport(departureAirport);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByArrivalAirport:
                 {
-                    var departureAirport = GetUserInput.GetStringData("departure airport");
+                    var departureAirport = UserInputUtility.GetStringData("departure airport");
                     
                     var flight = flightRepo.SearchFlightsByArrivalAirport(departureAirport);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
                 case PassengerOperations.SearchByFlightClass:
                 {
-                    var flightClass = GetUserInput.GetStringData("flight class");
+                    var flightClass = UserInputUtility.GetStringData("flight class");
                     
                     var flight = flightRepo.SearchFlightsByFlightClass(flightClass);
 
                     if (flight is null)
                     {
-                        ConsoleOutput.NoDataFoundMessage("flights");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("flights"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
 
-                    ConsoleOutput.PrintGeneralMessage(flight!.ToString());
+                    Console.WriteLine(flight!.ToString());
                     
                     break;
                 }
@@ -553,10 +570,10 @@ namespace AirportTicketBooking
                     var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
                     var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
                     
-                    var bookingId = GetUserInput.GetIdFromUser();
-                    var flightId = GetUserInput.GetIntegerFromUser("flight id");
-                    var passengerId = GetUserInput.GetIntegerFromUser("passenger id");
-                    var seatsNumber = GetUserInput.GetIntegerFromUser("seats number");
+                    var bookingId = UserInputUtility.GetIdFromUser();
+                    var flightId = UserInputUtility.GetIntegerFromUser("flight id");
+                    var passengerId = UserInputUtility.GetIntegerFromUser("passenger id");
+                    var seatsNumber = UserInputUtility.GetIntegerFromUser("seats number");
 
                     var bookingData = new BookingDto(
                         bookingId,
@@ -577,11 +594,11 @@ namespace AirportTicketBooking
                 {
                     var bookingCsvReader = new CSVReaderService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
 
-                    var bookingId = GetUserInput.GetIntegerFromUser("booking id");
+                    var bookingId = UserInputUtility.GetIntegerFromUser("booking id");
                     
                     var editedBooking = booking.EditBooking(bookingId, csvioService, bookingCsvReader.CsvReader);
                     
-                    ConsoleOutput.PrintGeneralMessage($"The booking with the id of {editedBooking.BookingId} got edited successfully!");
+                    Console.WriteLine($"The booking with the id of {editedBooking.BookingId} got edited successfully!");
                     break;
                 }
                 case PassengerOperations.ModifyABooking:
@@ -590,11 +607,11 @@ namespace AirportTicketBooking
                     var bookingCsvWriter = new CSVWriterService(csvConfigurations.CurrentDirectory, csvConfigurations.CsvConfiguration, "Booking");
                     var writeToBookingCsvFile = new WriteToCsvFile(bookingCsvWriter);
                     
-                    var bookingId = GetUserInput.GetIntegerFromUser("booking id");
+                    var bookingId = UserInputUtility.GetIntegerFromUser("booking id");
                     
                     booking.CancelBooking(bookingId, csvioService, bookingCsvReader, writeToBookingCsvFile);
                     
-                    ConsoleOutput.PrintGeneralMessage($"Booking with {bookingId} got deleted successfully!");
+                    Console.WriteLine($"Booking with {bookingId} got deleted successfully!");
                     break;
                 }
                 case PassengerOperations.GetBookings:
@@ -609,13 +626,14 @@ namespace AirportTicketBooking
                     {
                         foreach (var bookingItem in bookings)
                         {
-                            ConsoleOutput.PrintGeneralMessage(bookingItem.ToString());
+                            Console.WriteLine(bookingItem.ToString());
                         }
                     }
                     else
                     {
-                        ConsoleOutput.NoDataFoundMessage("bookings");
-                        Environment.Exit(1);
+                        Console.WriteLine(ConsoleOutputUtility.NoDataFoundMessage("bookings"));
+                        Console.WriteLine("You will be redirected to the start of the program.");
+                        HandlePassengerCreation();
                     }
                     
                     break;
