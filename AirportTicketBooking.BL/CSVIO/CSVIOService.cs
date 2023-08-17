@@ -1,12 +1,13 @@
-using System;
 using System.Linq;
 using AirportTicketBooking.Flights;
 using CsvHelper;
 
 namespace AirportTicketBooking
 {
-    public class CSVIOService
+    public class CSVIOService : ICSVIOService
     {
+        public CSVIOService() {  }
+        
         public T SearchForRecord<T>(string property, string value, CsvReader csv) 
         {
             var records = csv.GetRecords<T>();

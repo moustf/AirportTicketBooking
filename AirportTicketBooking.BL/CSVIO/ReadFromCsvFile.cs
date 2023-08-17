@@ -4,7 +4,7 @@ using AirportTicketBooking.Services;
 
 namespace AirportTicketBooking
 {
-    public class ReadFromCsvFile
+    public class ReadFromCsvFile : IReadFromCsvFile
     {
         public void RegisterFlightsData(string filePath, FileServices fileServices, FlightValidationService flightValidationService)
         {
@@ -22,7 +22,6 @@ namespace AirportTicketBooking
                 }
 
                 fileServices.WriteToCsvFile(filePath, fileLines);
-            // $@"{_csvConfigurationObject.CurrentDirectory}/DataStore/Flight.csv"
         }
     }
 }
