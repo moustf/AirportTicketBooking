@@ -4,7 +4,7 @@ namespace AirportTicketBooking.Bookings
 {
     public class BookingService
     {
-        public Booking CreateNewBooking(BookingDto bookingData)
+        public Booking CreateNewBooking(IBookingDto bookingData)
         {
             var booking = new Booking()
             {

@@ -70,6 +70,8 @@
         <Compile Include="Bookings\Booking.cs" />
         <Compile Include="Bookings\BookingRepository.cs" />
         <Compile Include="Bookings\BookingService.cs" />
+        <Compile Include="Bookings\IBookingRepository.cs" />
+        <Compile Include="Comparers\BookingComparer.cs" />
         <Compile Include="Comparers\ManagerComparer.cs" />
         <Compile Include="Comparers\PassengerComparer.cs" />
         <Compile Include="CSVIO\CSVConfiguration.cs" />
@@ -81,6 +83,7 @@
         <Compile Include="CSVIO\ReadFromCsvFile.cs" />
         <Compile Include="CSVIO\WriteToCsvFile.cs" />
         <Compile Include="Dtos\BookingDto.cs" />
+        <Compile Include="Dtos\IBookingDto.cs" />
         <Compile Include="Dtos\IManagerDto.cs" />
         <Compile Include="Dtos\IPassengerDto.cs" />
         <Compile Include="Dtos\ManagerDto.cs" />

@@ -6,7 +6,7 @@ using CsvHelper;
 
 namespace AirportTicketBooking.Bookings
 {
-    public class BookingRepository
+    public class BookingRepository  : IBookingRepository
     {
         private readonly CSVIOService _csvioService;
         private readonly CSVReaderService _bookingCsvService;
