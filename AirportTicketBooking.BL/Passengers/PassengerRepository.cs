@@ -2,11 +2,11 @@ using CsvHelper;
 
 namespace AirportTicketBooking.Passengers
 {
-    public class PassengerRepository
+    public class PassengerRepository : IPassengerRepository
     {
-        public Passenger SearchForPassenger(string passengerName, CSVIOService csvioService, CsvReader csvReader)
+        public Passenger SearchForPassenger(string passengerName, ICSVIOService csvioService, CsvReader csvReader)
         {
-            var passenger = csvioService.SearchForRecord<Passenger>("PassengerName", passengerName, csvReader);
+            var passenger = csvioService.SearchForRecord<Passenger>("Name", passengerName, csvReader);
 
             return passenger;
         }

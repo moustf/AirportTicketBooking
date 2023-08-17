@@ -5,6 +5,6 @@ namespace AirportTicketBooking.Dtos
         string Name,
         string Email,
         string PassportNumber,
-        string CreditCardNumber
-        );
+        string CreditCard
+        ) : IPassengerDto;
 }

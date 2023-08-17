@@ -5,5 +5,5 @@ namespace AirportTicketBooking.Dtos
         string Name,
         string Email,
         string Username
-        );
+        ) : IManagerDto;
 }

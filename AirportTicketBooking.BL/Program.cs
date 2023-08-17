@@ -68,7 +68,7 @@ namespace AirportTicketBooking
                     
                     var managerName = UserInputUtility.GetStringData("name");
                     
-                    var manager = managerRepo.SearchForExistingManager(managerName, csvioService, managerCsvReader);
+                    var manager = managerRepo.SearchForManager(managerName, csvioService, managerCsvReader);
 
                     if (manager is null)
                     {

@@ -2,9 +2,9 @@ using CsvHelper;
 
 namespace AirportTicketBooking.Managers
 {
-    public class ManagerRepository
+    public class ManagerRepository : IManagerRepository
     {
-        public Manager SearchForExistingManager(string name, CSVIOService csvioService, CSVReaderService managerReaderService)
+        public Manager SearchForManager(string name, ICSVIOService csvioService, CSVReaderService managerReaderService)
         {
             var manager = csvioService.SearchForRecord<Manager>("ManagerName", name, managerReaderService.CsvReader);
             

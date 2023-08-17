@@ -2,11 +2,10 @@ using System;
 using System.Globalization;
 using System.IO;
 using AirportTicketBooking.Services;
-using CsvHelper;
 
 namespace AirportTicketBooking.Flights
 {
-    public class FlightRepository
+    public class FlightRepository : IFlightRepository
     {
         private readonly CSVReaderService _flightCsvService;
         private readonly CSVIOService _csvioService;
@@ -17,7 +16,7 @@ namespace AirportTicketBooking.Flights
             _csvioService = csvioService;
         }
         
-        public void InsertFlights(string filePath, ReadFromCsvFile readFromCsvFile, FileServices fileServices, FlightValidationService flightValidationService)
+        public void InsertFlights(string filePath, IReadFromCsvFile readFromCsvFile, FileServices fileServices, FlightValidationService flightValidationService)
         {
             if (!filePath.Contains(".csv"))
             {

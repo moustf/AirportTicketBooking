@@ -4,7 +4,7 @@ namespace AirportTicketBooking.Passengers
 {
     public class PassengerService
     {
-        public Passenger CreateNewPassenger(PassengerDto passengerData)
+        public Passenger CreateNewPassenger(IPassengerDto passengerData)
         {
             var passenger = new Passenger()
             {
@@ -12,7 +12,7 @@ namespace AirportTicketBooking.Passengers
                 Name = passengerData.Name,
                 Email = passengerData.Email,
                 PassportNumber = passengerData.PassportNumber,
-                CreditCard = passengerData.CreditCardNumber,
+                CreditCard = passengerData.CreditCard,
             };
             
             return passenger;

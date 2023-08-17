@@ -4,7 +4,7 @@ namespace AirportTicketBooking.Managers
 {
     public class ManagerService
     {
-        public Manager CreateNewManager(ManagerDto managerData)
+        public Manager CreateNewManager(IManagerDto managerData)
         {
             var manager = new Manager()
             {
